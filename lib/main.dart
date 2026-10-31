@@ -1,15 +1,56 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(QuranWidget());
+  runApp(const QuranWidget());
 }
 
-class QuranWidget extends StatelessWidget {
+class QuranWidget extends StatefulWidget {
   const QuranWidget({super.key});
-  void musicplay(String numMusic) {
-    final player = AudioPlayer();
-    player.play(AssetSource('audio/$numMusic.mp3'));
+
+  @override
+  State<QuranWidget> createState() => _QuranWidgetState();
+}
+
+class _QuranWidgetState extends State<QuranWidget> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  late final StreamSubscription<void> _completionSubscription;
+  String? _currentMusicFile;
+  int _playRequest = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _completionSubscription = _audioPlayer.onPlayerComplete.listen((_) {
+      if (!mounted) return;
+      setState(() => _currentMusicFile = null);
+    });
+  }
+
+  Future<void> _playMusic(String musicFile) async {
+    if (_currentMusicFile == musicFile) return;
+
+    final request = ++_playRequest;
+    setState(() => _currentMusicFile = musicFile);
+
+    try {
+      await _audioPlayer.stop();
+      if (!mounted || request != _playRequest) return;
+      await _audioPlayer.play(AssetSource('audio/$musicFile.mp3'));
+    } catch (_) {
+      if (mounted && request == _playRequest) {
+        setState(() => _currentMusicFile = null);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    unawaited(_completionSubscription.cancel());
+    unawaited(_audioPlayer.dispose());
+    super.dispose();
   }
 
   Widget mybutton({required String buttonText, required String musicFile}) {
@@ -18,30 +59,26 @@ class QuranWidget extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 5.0),
         child: ElevatedButton(
           onPressed: () {
-            musicplay(musicFile);
+            _playMusic(musicFile);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Color.fromARGB(255, 41, 25, 10),
           ),
-          
-            child: Row(
-              textDirection: TextDirection.rtl,
-              children: [
-                Icon(
-                  Icons.play_arrow,
+
+          child: Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(Icons.play_arrow, color: Color.fromARGB(255, 230, 230, 230)),
+              SizedBox(width: 10),
+              Text(
+                buttonText,
+                style: TextStyle(
+                  fontSize: 24,
                   color: Color.fromARGB(255, 230, 230, 230),
                 ),
-                SizedBox(width: 10),
-                Text(
-                  buttonText,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Color.fromARGB(255, 230, 230, 230),
-                  ),
-                ),
-              ],
-            ),
-          
+              ),
+            ],
+          ),
         ),
       ),
     );
