@@ -14,21 +14,34 @@ class QuranWidget extends StatelessWidget {
 
   Widget mybutton({required String buttonText, required String musicFile}) {
     return Expanded(
-      child: ElevatedButton(
-        onPressed: () {
-          musicplay(musicFile);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color.fromARGB(255, 41, 25, 10),
-        ),
-        child: Center(
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              fontSize: 24,
-              color: Color.fromARGB(255, 230, 230, 230),
-            ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5.0),
+        child: ElevatedButton(
+          onPressed: () {
+            musicplay(musicFile);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 41, 25, 10),
           ),
+          
+            child: Row(
+              textDirection: TextDirection.rtl,
+              children: [
+                Icon(
+                  Icons.play_arrow,
+                  color: Color.fromARGB(255, 230, 230, 230),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  buttonText,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Color.fromARGB(255, 230, 230, 230),
+                  ),
+                ),
+              ],
+            ),
+          
         ),
       ),
     );

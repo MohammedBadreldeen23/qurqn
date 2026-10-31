@@ -11,20 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qurqn/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Quran screen shows surah buttons', (WidgetTester tester) async {
     await tester.pumpWidget(const QuranWidget());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Quran Kareem'), findsOneWidget);
+    expect(find.text('الفاتحة'), findsOneWidget);
+    expect(find.text('الناس'), findsOneWidget);
   });
 }
